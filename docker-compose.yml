@@ -1,0 +1,54 @@
+services:
+  inventory-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: inventory_db
+      POSTGRES_USER: inventory_user
+      POSTGRES_PASSWORD: inventory_pass
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U inventory_user -d inventory_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports: ["5436:5432"]
+    volumes: [inventory_data:/var/lib/postgresql/data]
+
+  order-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: order_db
+      POSTGRES_USER: order_user
+      POSTGRES_PASSWORD: order_pass
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U order_user -d order_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports: ["5437:5432"]
+    volumes: [order_data:/var/lib/postgresql/data]
+
+  inventory-service:
+    build:
+      context: .
+      dockerfile: inventory-service/Dockerfile
+    env_file: [inventory-service/.env]
+    depends_on:
+      inventory-db:
+        condition: service_healthy
+    ports: ["50051:50051","9090:9090"]
+
+  order-service:
+    build:
+      context: .
+      dockerfile: order-service/Dockerfile
+    env_file: [order-service/.env]
+    depends_on:
+      order-db:
+        condition: service_healthy
+      inventory-service:
+        condition: service_started
+    ports: ["8080:8080"]
+
+volumes:
+  inventory_data:
+  order_data:

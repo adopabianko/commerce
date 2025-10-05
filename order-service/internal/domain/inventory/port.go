@@ -2,8 +2,8 @@ package inventory
 
 import (
 	"context"
-	"google.golang.org/grpc"
 	inventoryv1 "github.com/adopabianko/commerce/proto/gen/inventory/v1"
+	"google.golang.org/grpc"
 )
 
 type Client interface {

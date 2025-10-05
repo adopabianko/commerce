@@ -10,10 +10,10 @@ type Order struct {
 }
 
 type OrderItem struct {
-	ID       uint   `gorm:"primaryKey"`
-	OrderID  string `gorm:"index"`
-	SKU      string
-	Qty      int32
+	ID      uint   `gorm:"primaryKey"`
+	OrderID string `gorm:"index"`
+	SKU     string
+	Qty     int32
 }
 
 type Repository interface {

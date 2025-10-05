@@ -3,8 +3,8 @@ package grpcsvr
 import (
 	"context"
 
-	inventoryv1 "github.com/adopabianko/commerce/proto/gen/inventory/v1"
 	"github.com/adopabianko/commerce/inventory-service/internal/usecase"
+	inventoryv1 "github.com/adopabianko/commerce/proto/gen/inventory/v1"
 )
 
 type Server struct {

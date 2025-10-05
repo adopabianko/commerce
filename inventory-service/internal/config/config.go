@@ -1,9 +1,9 @@
 package config
 
 import (
+	"github.com/joho/godotenv"
 	"os"
 	"time"
-	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -26,6 +26,8 @@ func Load() Config {
 }
 
 func getenv(k, def string) string {
-	if v := os.Getenv(k); v != "" { return v }
+	if v := os.Getenv(k); v != "" {
+		return v
+	}
 	return def
 }

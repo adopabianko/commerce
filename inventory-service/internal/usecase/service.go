@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	inventoryv1 "github.com/adopabianko/commerce/proto/gen/inventory/v1"
 	domain "github.com/adopabianko/commerce/inventory-service/internal/domain/inventory"
+	inventoryv1 "github.com/adopabianko/commerce/proto/gen/inventory/v1"
 )
 
 type Service struct {
@@ -20,13 +20,17 @@ func (s *Service) CheckStock(ctx context.Context, req *inventoryv1.CheckStockReq
 		p, _ := s.repo.GetBySKU(ctx, it.Sku, false)
 		if p == nil || p.Stock < it.Qty {
 			missing := it.Qty
-			if p != nil { missing = it.Qty - p.Stock }
+			if p != nil {
+				missing = it.Qty - p.Stock
+			}
 			short[it.Sku] = missing
 		}
 	}
 	ok := len(short) == 0
 	msg := "ok"
-	if !ok { msg = "insufficient stock" }
+	if !ok {
+		msg = "insufficient stock"
+	}
 	return &inventoryv1.CheckStockResponse{Ok: ok, Message: msg, Shortages: short}, nil
 }
 
@@ -40,6 +44,8 @@ func (s *Service) ReserveStock(ctx context.Context, req *inventoryv1.ReserveStoc
 }
 
 func (s *Service) ReleaseStock(ctx context.Context, req *inventoryv1.ReleaseStockRequest) (*inventoryv1.ReleaseStockResponse, error) {
-	for _, it := range req.Items { _ = s.repo.AdjustStock(ctx, it.Sku, it.Qty) }
+	for _, it := range req.Items {
+		_ = s.repo.AdjustStock(ctx, it.Sku, it.Qty)
+	}
 	return &inventoryv1.ReleaseStockResponse{Ok: true, Message: "released"}, nil
 }

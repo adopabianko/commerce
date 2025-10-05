@@ -3,6 +3,8 @@ package httpapi
 import (
 	"net/http"
 
+	"github.com/adopabianko/commerce/order-service/infrastructure/auth"
+	"github.com/adopabianko/commerce/order-service/infrastructure/http/middleware"
 	"github.com/adopabianko/commerce/order-service/internal/usecase"
 	"github.com/gin-gonic/gin"
 )
@@ -11,7 +13,8 @@ type Handler struct{ Place *usecase.PlaceOrder }
 
 func New(place *usecase.PlaceOrder) *Handler { return &Handler{Place: place} }
 
-func (h *Handler) Routes(r *gin.Engine) {
+func (h *Handler) Routes(r *gin.Engine, authClient *auth.GRPCAuthClient) {
+	r.Use(middleware.AuthMiddleware(authClient))
 	r.POST("/orders", h.placeOrder)
 }
 

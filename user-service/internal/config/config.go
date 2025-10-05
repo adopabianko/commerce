@@ -18,9 +18,9 @@ type Config struct {
 func Load() Config {
 	_ = godotenv.Load()
 	return Config{
-		DBDSN:       getenv("DB_DSN", "host=localhost user=postgres password=postgres dbname=inventory_db port=5432 sslmode=disable TimeZone=UTC"),
-		GRPCAddr:    getenv("GRPC_ADDR", ":50051"),
-		HTTPAddr:    getenv("HTTP_ADDR", ":9090"),
+		DBDSN:       getenv("DB_DSN", "host=localhost user=postgres password=postgres dbname=user_db port=5432 sslmode=disable TimeZone=UTC"),
+		GRPCAddr:    getenv("GRPC_ADDR", ":50052"),
+		HTTPAddr:    getenv("HTTP_ADDR", ":7070"),
 		DBMaxRetry:  10,
 		DBRetryWait: 2 * time.Second,
 	}

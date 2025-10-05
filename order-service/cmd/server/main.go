@@ -8,6 +8,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
+	"github.com/adopabianko/commerce/order-service/infrastructure/auth"
 	pgrepo "github.com/adopabianko/commerce/order-service/infrastructure/persistence/postgres"
 	grpccli "github.com/adopabianko/commerce/order-service/infrastructure/transport/grpcclient"
 	httpapi "github.com/adopabianko/commerce/order-service/infrastructure/transport/httpapi"
@@ -46,7 +47,14 @@ func main() {
 
 	r := gin.Default()
 	h := httpapi.New(uc)
-	h.Routes(r)
+
+	authClient, err := auth.NewGRPCAuthClient()
+	if err != nil {
+		log.Fatalf("failed to connect user-service grpc: %v", err)
+	}
+	defer authClient.Close()
+
+	h.Routes(r, authClient)
 
 	log.Printf("order-service HTTP %s", cfg.HTTPAddr)
 	_ = r.Run(cfg.HTTPAddr)

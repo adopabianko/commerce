@@ -1,17 +1,16 @@
 .PHONY: up down proto-all build-all test-all
 
-make up:
-	docker compose up -d --build
-
-make down:
+up:
+	docker compose up --build
+down:
 	docker compose down -v
 proto-all:
 	cd proto && make
-
 build-all:
 	cd order-service && go build ./...
 	cd inventory-service && go build ./...
-
+	cd user-service && go build ./...
 test-all:
 	cd order-service && go test ./...
 	cd inventory-service && go test ./...
+	cd user-service && go test ./...

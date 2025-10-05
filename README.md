@@ -10,6 +10,7 @@ Fitur:
 - **gRPC reflection** aktif → bisa debug dengan `grpcurl`.
 - **Healthcheck** Postgres + **retry** koneksi di service saat startup.
 - **Docker Compose** (monorepo build), Go **1.24**, Postgres **17**.
+- **JWT authentication** (72h expiry)
 
 ## Cara Menjalankan
 ```bash
@@ -20,7 +21,10 @@ make proto-all
 make build-all
 
 # 3) Jalankan semua container
-docker compose up --build
+make up
+
+# 4) Mematikan semua container
+make down
 ```
 
 ### Seed & Uji Coba
@@ -34,10 +38,35 @@ curl -X POST http://localhost:9090/seed -H "Content-Type: application/json" -d '
 }'
 ```
 
+Register User:
+```bash
+curl -X POST http://localhost:7070/register -H "Content-Type: application/json" -d '{
+  "email": "john@example.com",
+  "password": "password123",
+  "name": "John Doe"
+}'
+```
+
+Login User:
+```bash
+curl -X POST http://localhost:7070/login -H "Content-Type: application/json" -d '{
+  "email": "john@example.com",
+  "password": "password123"
+}'
+```
+Validate Token:
+```bash
+grpcurl -plaintext -d '{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTk5MjgzNjksInN1YiI6MX0.SStPi3Zhx50DfEEzwK_w0E5JGhae-syvibXP-fy1vs0"}' localhost:50052 user.v1.UserService/Validate
+```
+
 Buat order:
 ```bash
-curl -X POST http://localhost:8080/orders -H "Content-Type: application/json" -d '{
-  "items": [{"sku":"SKU-001","qty":2},{"sku":"SKU-002","qty":1}]
+curl -X POST http://localhost:8080/orders -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTk5MzA1MTgsInN1YiI6MX0.2CFNfPC7E96n7411Isc_LVsxPo8maYOVEY9Yy9Wg5tU" -H "Content-Type: application/json" -d '{
+  "items": [
+    {"sku": "SKU-001", "qty": 2},
+    {"sku": "SKU-002", "qty": 1}
+  ]
 }'
 ```
 

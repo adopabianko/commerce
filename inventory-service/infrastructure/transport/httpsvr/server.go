@@ -1,4 +1,4 @@
-package httpadmin
+package httpsvr
 
 import (
 	"net/http"

@@ -27,6 +27,20 @@ services:
     ports: ["5437:5432"]
     volumes: [order_data:/var/lib/postgresql/data]
 
+  user-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: user_user
+      POSTGRES_PASSWORD: user_pass
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user_user -d user_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports: ["5438:5432"]
+    volumes: [user_data:/var/lib/postgresql/data]
+
   inventory-service:
     build:
       context: .
@@ -35,7 +49,7 @@ services:
     depends_on:
       inventory-db:
         condition: service_healthy
-    ports: ["50051:50051","9090:9090"]
+    ports: ["50051:50051", "9090:9090"]
 
   order-service:
     build:
@@ -47,8 +61,21 @@ services:
         condition: service_healthy
       inventory-service:
         condition: service_started
+      user-service:
+        condition: service_started
     ports: ["8080:8080"]
+
+  user-service:
+    build:
+      context: .
+      dockerfile: user-service/Dockerfile
+    env_file: [user-service/.env]
+    depends_on:
+      user-db:
+        condition: service_healthy
+    ports: ["50052:50052", "7070:7070"]
 
 volumes:
   inventory_data:
   order_data:
+  user_data:

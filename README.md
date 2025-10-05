@@ -1,7 +1,8 @@
 # Commerce — Microservices (Clean Architecture) — Go + gRPC + PostgreSQL 17
 
-Implementasi **Clean Architecture** untuk 2 service:
-- **order-service** (REST, Gin) — menerima order dan memanggil inventory via gRPC.
+Implementasi **Clean Architecture** untuk 3 service:
+- **user-service** (REST, gRPC) - menyediakan `Register`, `Login`, `Validate`
+- **order-service** (REST) — menerima order dan memanggil inventory via gRPC.
 - **inventory-service** (gRPC) — mengelola stok produk (PostgreSQL 17), menyediakan `CheckStock`, `ReserveStock`, `ReleaseStock`.
 
 Fitur:
@@ -92,7 +93,7 @@ inventory-service/
   infrastructure/
     persistence/postgres/       # implementasi repository GORM
     transport/grpcsvr/          # gRPC server adapter
-    transport/httpadmin/        # HTTP admin (seed)
+    transport/httpsvr/          # HTTP admin (seed)
 order-service/
   cmd/server/
   internal/
@@ -101,9 +102,21 @@ order-service/
     domain/inventory/           # port untuk InventoryClient
     usecase/                    # usecase PlaceOrder
   infrastructure/
+    auth/
+    http/                       # middleware authentication
     persistence/postgres/
     transport/httpapi/          # REST handler
     transport/grpcclient/       # gRPC client ke inventory
+user-service
+  cmd/server/
+  internal/
+    config/                     # loader .env
+    domain/user/                # entity + repository port
+    usecase/                    # business rules
+  infrastructure/
+    persistence/postgres/       # implementasi repository GORM
+    transport/grpcsvr/          # gRPC server adapter
+    transport/httpsvr/          # HTTP admin (seed)
 design/system-design.png        # diagram PNG
 docker-compose.yml
 Makefile
